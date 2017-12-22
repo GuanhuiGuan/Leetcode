@@ -7,6 +7,16 @@
  *     TreeNode(int x) { val = x; }
  * }
  */
+
+//Improved
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if(root == null)    return 0;
+        return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+    }
+}
+
+//____________________________
 class Solution {
     public int maxDepth(TreeNode root) {
         return search(root, 0);
