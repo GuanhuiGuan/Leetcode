@@ -11,34 +11,32 @@ class Solution {
     public int findSecondMinimumValue(TreeNode root) {
         //if same as the root, no second minimum
         if(root == null)    return -1;
-        int scMin = helper(root);
-        if(scMin == root.val)   return -1;
-        return scMin;
-    }
-    
-    public int helper(TreeNode node){
         // no children
-        if(node.left == null)   return node.val;
+        // it eliminates the case that the path shares the same val till the end
+        if(root.left == null)   return -1;
         // has children
-        // same as parent
-        int leftV = node.val;
-        int rightV = node.val;
+        // same as parent or not
+        int leftV = root.left.val;
+        int rightV = root.right.val;
         
-        if(node.val == node.left.val){
-            leftV = helper(node.left);
+        // traverse downwards if same
+        if(root.val == root.left.val){
+            leftV = findSecondMinimumValue(root.left);
+        }
+        if(root.val == root.right.val){
+            rightV = findSecondMinimumValue(root.right);
+        }
+        
+        // select output
+        if(leftV == -1 && rightV == -1)   return -1;
+        else if(leftV == -1){
+            return rightV;
+        }
+        else if(rightV == -1){
+            return leftV;
         }
         else{
-            leftV = node.left.val;
+            return Math.min(leftV, rightV);
         }
-        if(node.val == node.right.val){
-            rightV = helper(node.right);
-        }
-        else{
-            rightV = node.right.val;
-        }
-        if(leftV == node.val)   return rightV;
-        if(rightV == node.val)  return leftV;
-        return Math.min(leftV, rightV);
-            
     }
 }
