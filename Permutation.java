@@ -7,9 +7,11 @@ class Solution {
     }
     
     public void bt(List<List<Integer>> lists, List<Integer> list, int[] nums){
+        // remember to add(new ArrayList<>(list))
         if(list.size() == nums.length)  lists.add(new ArrayList<>(list));
         
         for(int i = 0; i < nums.length; i++){
+            // use contains to find used ones
             if(list.contains(nums[i]))  continue;
             list.add(nums[i]);
             bt(lists, list, nums);
