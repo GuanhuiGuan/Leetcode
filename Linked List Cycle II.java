@@ -14,11 +14,9 @@ public class Solution {
         // Floyd's cycle detection, s+m = n*r
         
         ListNode fast = head, slow = head;
-        while(slow != null && fast != null) {
+        while(fast != null && fast.next != null) {
             slow = slow.next;
-            fast = fast.next;
-            if(fast == null)   return null;
-            fast = fast.next;
+            fast = fast.next.next;
             
             if(fast == slow) {
                 slow = head;
