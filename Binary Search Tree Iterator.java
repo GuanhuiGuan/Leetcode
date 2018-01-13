@@ -8,17 +8,16 @@
  * }
  */
 
+// stack has O(h) complexity
 public class BSTIterator {
-    // use stack to meet the space requirement
     Stack<TreeNode> stack = new Stack<>();
 
     public BSTIterator(TreeNode root) {
-        goLeftMost(root);
+        pushLeft(root);
     }
     
-    // push all on the left lane of curr node
-    public void goLeftMost(TreeNode node){
-        while(node != null){
+    public void pushLeft(TreeNode node) {
+        while(node != null) {
             stack.push(node);
             node = node.left;
         }
@@ -29,14 +28,39 @@ public class BSTIterator {
         return !stack.isEmpty();
     }
 
-    // search if more on the right child
     /** @return the next smallest number */
     public int next() {
-        TreeNode node = stack.pop();
-        goLeftMost(node.right);
-        return node.val;
+        TreeNode top = stack.pop();
+        pushLeft(top.right);
+        return top.val;
     }
 }
+
+// // queue has O(n) space complexity
+// public class BSTIterator {
+//     Queue<Integer> q = new LinkedList<>();
+
+//     public BSTIterator(TreeNode root) {
+//         traverse(root);
+//     }
+    
+//     public void traverse(TreeNode node) {
+//         if(node == null)    return;
+//         traverse(node.left);
+//         q.offer(node.val);
+//         traverse(node.right);
+//     }
+
+//     /** @return whether we have a next smallest number */
+//     public boolean hasNext() {
+//         return !q.isEmpty();
+//     }
+
+//     /** @return the next smallest number */
+//     public int next() {
+//         return q.poll();
+//     }
+// }
 
 /**
  * Your BSTIterator will be called like this:
