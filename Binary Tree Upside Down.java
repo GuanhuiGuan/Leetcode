@@ -9,14 +9,15 @@
  */
 class Solution {
     public TreeNode upsideDownBinaryTree(TreeNode root) {
-        // goes left; lchild.left = rchild, lchild.right = parent, disconnects original left, right
-        if(root == null || root.left == null)   return root;
-        
-        TreeNode reNode = upsideDownBinaryTree(root.left);
+        if(root == null)    return null;
+        TreeNode newHead = upsideDownBinaryTree(root.left);
+        if(newHead == null) return root;
         root.left.left = root.right;
         root.left.right = root;
         root.left = null;
         root.right = null;
-        return reNode;
+        // they would be reconnected in upper lvls
+        // return the true new root, thus no operation on it unless the bottom lvl
+        return newHead;
     }
 }
