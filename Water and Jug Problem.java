@@ -7,6 +7,7 @@ class Solution {
         return z%GCD(x, y) == 0;
     }
     
+//     greatest common divisor
     public int GCD(int x, int y) {
         while(y != 0) {
             int t = y;
