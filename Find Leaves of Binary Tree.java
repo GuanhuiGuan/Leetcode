@@ -8,25 +8,19 @@
  * }
  */
 class Solution {
+    List<List<Integer>> re = new ArrayList<>();
+    
     public List<List<Integer>> findLeaves(TreeNode root) {
-        List<List<Integer>> lists = new ArrayList<>();
-        helper(root, lists);
-        return lists;
+        // bottom up find height
+        height(root);
+        return re;
     }
     
-    // find the height of the node
-    public int helper(TreeNode node, List<List<Integer>> lists){
-        // negative height
-        if(node == null)    return -1;
-        // height, start from 0(leaves)
-        int height = 1 + Math.max(helper(node.left, lists), helper(node.right, lists));
-        // reach new height: add list
-        if(lists.size() <= height){
-            lists.add(new ArrayList<>());
-        }
-        // add val to list of current height
-        lists.get(height).add(node.val);
-        
-        return height;
+    public int height(TreeNode node) {
+        if(node == null)    return 0;
+        int h = 1 + Math.max(height(node.left), height(node.right));
+        if(h > re.size())   re.add(new ArrayList<>());
+        re.get(h-1).add(node.val);
+        return h;
     }
 }
