@@ -1,40 +1,33 @@
 class Solution {
-    boolean[] visited;
-    Map<String, Boolean> map;
+    // hashmap record tried states, state record used integers
+    Map<String, Boolean> map = new HashMap<>();
+    int[] state;
     
     public boolean canIWin(int maxChoosableInteger, int desiredTotal) {
-        if(desiredTotal <= 0)   return true;
-        if(maxChoosableInteger*(maxChoosableInteger+1)/2 < desiredTotal)  return false;
+        int mci = maxChoosableInteger, dt = desiredTotal;
+        state = new int[mci];
+        int max = (mci+1)*mci/2;
+        if(max < dt)    return false;
         
-        visited = new boolean[maxChoosableInteger+1];
-        Arrays.fill(visited, false);
-        map = new HashMap<>();
-        return dp(desiredTotal);
+        return helper(dt);
     }
     
-    public boolean dp(int desiredTotal){
-        if(desiredTotal <= 0)   return false;
-        String key = Arrays.toString(visited);
-        
-        if(!map.containsKey(key)){
-            // find out what next player can do
-            for(int i = 1; i < visited.length; i++){
-                if(visited[i] == false){
-                    visited[i] = true;
-                    // when the other player lost, cur player won
-                    if(!dp(desiredTotal - i)){
-                        visited[i] = false;
-                        map.put(key, true);
-                        return true;
-                    }
-                    // cur player lost; reset visited and try new ones
-                    visited[i] = false;
+    public boolean helper(int dt) {
+        String s = Arrays.toString(state);
+        if(map.containsKey(s))  return map.get(s);
+        for(int i = 0; i < state.length; i++) {
+            if(state[i] == 0) {
+                state[i] = 1;
+                // if >= target or opponent lost
+                if(i+1 >= dt || !helper(dt-i-1)) {
+                    map.put(s, true);
+                    state[i] = 0;
+                    return true;
                 }
+                state[i] = 0;
             }
-            // every option fails(other player won); lost
-            map.put(key, false);
         }
-        
-        return map.get(key);
+        map.put(s, false);
+        return false;
     }
 }
