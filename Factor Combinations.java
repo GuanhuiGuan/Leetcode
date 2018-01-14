@@ -1,26 +1,23 @@
 class Solution {
+    List<List<Integer>> re = new ArrayList<>();
+    
     public List<List<Integer>> getFactors(int n) {
-        List<List<Integer>> re = new ArrayList<>();
-        if(n < 2)   return re;
-        helper(re, new ArrayList<Integer>(), n, 2);
+        helper(n, 2, new ArrayList<>());
         return re;
     }
     
-    public void helper(List<List<Integer>> re, List<Integer> list, int n, int start){
-        // a list is complete: add to re
-        if(n <= 1){
-            if(list.size() > 1){
-                re.add(new ArrayList(list));
-            }
+    public void helper(int n, int start, List<Integer> list) {
+        // start is here to avoid duplicate states
+        // size avoids the original integer
+        if(n <= 1 && list.size() > 1) {
+            re.add(new ArrayList<>(list));
+            return;
         }
-        else{
-            // not complete: continue recursive DFS
-            for(int i = start; i <= n; i++){
-                if(n%i == 0){
-                    list.add(i);
-                    helper(re, list, n/i, i);
-                    list.remove(list.size()-1);
-                }
+        for(int i = start; i <= n; i++) {
+            if(n%i == 0) {
+                list.add(i);
+                helper(n/i, i, list);
+                list.remove(list.size()-1);
             }
         }
     }
