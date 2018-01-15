@@ -1,43 +1,36 @@
 class Solution {
     public String minWindow(String s, String t) {
-        if(s == null || s.length() == 0 || s.length() < t.length())   return "";
-        
+        // substring problem: map, count && 2ptrs
+        // outer loop: check if key exists, and check if count changes
+        // inner loop: update min substring, check if key exists and check if count changes
         Map<Character, Integer> map = new HashMap<>();
-        for(int i = 0; i < t.length(); i++){
-            map.put(t.charAt(i), map.containsKey(t.charAt(i)) ? map.get(t.charAt(i))+1 : 1);
-            // if(map.containsKey(t.charAt(i)))    map.put(t.charAt(i), map.get(t.charAt(i))+1);
-            // else    map.put(t.charAt(i), 1);
+        for(int k = 0; k < t.length(); k++) {
+            map.put(t.charAt(k), map.containsKey(t.charAt(k))? map.get(t.charAt(k))+1: 1);
         }
+        int i = 0, count = t.length(), res = 0, relen = Integer.MAX_VALUE;
         
-        int start = 0, end = 0;
-        int subS = 0;
-        int len = s.length()+1;
-        int counter = t.length();
-        
-        while(end < s.length()){
-            if(map.containsKey(s.charAt(end))){
-                map.put(s.charAt(end), map.get(s.charAt(end))-1);
-                // only adjust counter if it's not redundant
-                if(map.get(s.charAt(end)) >= 0) counter--;
-            }
-            
-            while(counter == 0){
-                // update outcome
-                if(end - start + 1 < len){
-                    subS = start;
-                    len = end - start + 1;
-                }
+        for(int j = 0; j < s.length(); j++) {
+            char c = s.charAt(j);
+            if(map.containsKey(c)) {
+                if(map.get(c) > 0)  count--;
+                map.put(c, map.get(c)-1);
                 
-                if(map.containsKey(s.charAt(start))){
-                    map.put(s.charAt(start), map.get(s.charAt(start))+1);
-                    if(map.get(s.charAt(start)) > 0)    counter++;
+                while(count == 0) {
+                    if(relen > j-i+1) {
+                        res = i;
+                        relen = j-i+1;
+                    }
+                    char prev = s.charAt(i);
+                    if(map.containsKey(prev)) {
+                        if(map.get(prev) == 0)  count++;
+                        map.put(prev, map.get(prev)+1);
+                    }
+                    i++;
                 }
-                start++;
             }
-            end++;
         }
-        // avoid all invalid cases
-        if(len > s.length())    return "";
-        return s.substring(subS, subS+len);
+        
+        if(relen == Integer.MAX_VALUE)  return "";
+        return s.substring(res, res+relen);
     }
 }
