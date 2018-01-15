@@ -8,31 +8,26 @@
  */
 class Solution {
     public ListNode mergeKLists(ListNode[] lists) {
-        if(lists.length == 0)   return null;
-        
-        PriorityQueue<ListNode> heap = new PriorityQueue<ListNode>(lists.length, new Comparator<ListNode>(){
-            @Override
-            public int compare(ListNode o1, ListNode o2){
-                if(o1.val < o2.val) return -1;
-                if(o1.val == o2.val)    return 0;
-                else    return 1;
+        int n = lists.length;
+        if(n == 0)  return null;
+        if(n == 1)  return lists[0];
+        ListNode re = new ListNode(0), node = re;
+        // stores single nodes, sorted
+        Queue<ListNode> heap = new PriorityQueue<>(new Comparator<ListNode>() {
+            public int compare(ListNode l1, ListNode l2) {
+                return l1.val - l2.val;
             }
         });
         
-        for(ListNode list: lists){
-            if(list != null)    heap.add(list);
+        for(ListNode l: lists) {
+            if(l != null)   heap.offer(l);
         }
-        
-        ListNode dr = new ListNode(0);
-        ListNode move = dr;
-        while(!heap.isEmpty()){
-            ListNode newList = heap.poll();
-            move.next = newList;
-            move = move.next;
-            newList = newList.next;
-            if(newList != null) heap.add(newList);
+        while(!heap.isEmpty()) {
+            ListNode cur = heap.poll();
+            node.next = cur;
+            if(cur.next != null)    heap.offer(cur.next);
+            node = node.next;
         }
-        
-        return dr.next;
+        return re.next;
     }
 }
