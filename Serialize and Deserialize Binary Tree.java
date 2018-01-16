@@ -8,39 +8,44 @@
  * }
  */
 public class Codec {
-    private static final String splitter = ",";
-    private static final String Null = "X";
 
     // Encodes a tree to a single string.
     public String serialize(TreeNode root) {
+        // preorder walk: node->left to the end->right
+        // so that it could be better rebuilt(not like what's in problem description)
         StringBuilder sb = new StringBuilder();
-        srHelper(root, sb);
-        return sb.toString();
+        sb.append("[");
+        sh(root, sb);
+        String s = sb.toString();
+        s = s.substring(0, s.length()-1);
+        return s+"]";
     }
     
-    public void srHelper(TreeNode node, StringBuilder sb){
-        if(node == null)    sb.append("X").append(splitter);
-        else{
-            sb.append(node.val).append(splitter);
-            srHelper(node.left, sb);
-            srHelper(node.right, sb);
+    public void sh(TreeNode node, StringBuilder sb) {
+        if(node == null)    sb.append("null,");
+        else {
+            sb.append(node.val + ",");
+            sh(node.left, sb);
+            sh(node.right, sb);
         }
     }
 
     // Decodes your encoded data to tree.
     public TreeNode deserialize(String data) {
-        Deque<String> q = new LinkedList<>();
-        q.addAll(Arrays.asList(data.split(splitter)));
-        return dsHelper(q);
+        // preorder, always recurse on left first
+        data = data.substring(1, data.length()-1);
+        Queue<String> q = new LinkedList<>();
+        q.addAll(Arrays.asList(data.split(",")));
+        return dh(q);
     }
     
-    public TreeNode dsHelper(Deque<String> q){
-        String s = q.remove();
-        if(s.equals(Null))  return null;
-        
+    public TreeNode dh(Queue<String> q) {
+        if(q.isEmpty()) return null;
+        String s = q.poll();
+        if(s.equals("null"))    return null;
         TreeNode node = new TreeNode(Integer.parseInt(s));
-        node.left = dsHelper(q);
-        node.right = dsHelper(q);
+        node.left = dh(q);
+        node.right = dh(q);
         return node;
     }
 }
