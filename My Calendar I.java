@@ -1,5 +1,4 @@
 class MyCalendar {
-    // key(start), value(end)
     TreeMap<Integer, Integer> map;
 
     public MyCalendar() {
@@ -7,15 +6,12 @@ class MyCalendar {
     }
     
     public boolean book(int start, int end) {
-        // get the max start <= start
-        Integer floor = map.floorKey(start);
-        // check if exists or if its end intersects
-        if(floor != null && map.get(floor) > start) return false;
-        // get min start >= start
-        Integer ceil = map.ceilingKey(start);
-        // check if exists or if its start intersects
-        if(ceil != null && ceil < end) return false;
-        // can insert
+        // s<=start, e>start
+        Integer lowKey = map.floorKey(start);
+        if(lowKey != null && map.get(lowKey) > start)   return false;
+        // s>=start, s<end
+        Integer highKey = map.ceilingKey(start);
+        if(highKey != null && highKey < end)    return false;
         map.put(start, end);
         return true;
     }
