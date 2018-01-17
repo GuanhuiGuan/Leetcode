@@ -1,16 +1,15 @@
 class Solution {
     public int[][] multiply(int[][] A, int[][] B) {
-        int m = A.length, n = B[0].length, p = A[0].length;
-        int[][] re = new int[m][n];
+        int row = A.length, col = B[0].length, K = A[0].length;
+        int[][] re = new int[row][col];
         
-        for(int i = 0; i < m; i++){
-            for(int j = 0; j < n; j++){
-                int sum = 0;
-                for(int k = 0; k < p; k++){
-                    if(A[i][k] != 0 && B[k][j] != 0)    sum += A[i][k]*B[k][j];
-                    
+        for(int i = 0; i < row; i++) {
+            for(int k = 0; k < K; k++) {
+                if(A[i][k] == 0)    continue;
+                for(int j = 0; j < col; j++) {
+                    if(B[k][j] == 0)    continue;
+                    re[i][j] += A[i][k]*B[k][j];
                 }
-                re[i][j] = sum;
             }
         }
         return re;
