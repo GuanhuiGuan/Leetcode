@@ -10,15 +10,12 @@
 class Solution {
     public boolean isSymmetric(TreeNode root) {
         if(root == null)    return true;
-        return helper(root.left, root.right);
+        return checkTwo(root.left, root.right);
     }
     
-    public boolean helper(TreeNode lNode, TreeNode rNode){
-        // if at least one of them null: check if same
-        if(lNode == null || rNode == null)  return lNode == rNode;
-        // if not null: check if same value
-        if(lNode.val != rNode.val)  return false;
-        // if true: goes both outside and inside to check symmetry
-        return helper(lNode.left, rNode.right) && helper(lNode.right, rNode.left);
+    public boolean checkTwo(TreeNode ln, TreeNode rn) {
+        if(ln == null || rn == null)    return ln==rn;
+        if(ln.val != rn.val)    return false;
+        return checkTwo(ln.left, rn.right) && checkTwo(ln.right, rn.left);
     }
 }
