@@ -1,28 +1,24 @@
 class Solution {
     public boolean search(int[] nums, int target) {
-        int n = nums.length;
-        if(n == 0)  return false;
-        int start = 0, end = n-1;
-        while(start < end) {
-            int mid = start + (end-start)/2;
+        int n = nums.length, lo = 0, hi = n-1;
+        
+        while(lo <= hi) {
+            int mid = lo + (hi-lo)/2;
             if(nums[mid] == target) return true;
             
-            // end->mid || start->mid+1, terminates when start==end
-            // if not mono rise
-            if(nums[mid] > nums[end]) {
-                // front mono rise
-                if(target < nums[mid] && target >= nums[start])  end = mid;
-                else    start = mid+1;
+            // find which part is sorted
+            // front is sorted
+            if(nums[mid] > nums[hi]) {
+                if(target >= nums[lo] && target < nums[mid])    hi = mid-1;
+                else    lo = mid+1;
             }
-            // mono rise
-            else if(nums[mid] < nums[end]) {
-                // back mono rise
-                if(target > nums[mid] && target <= nums[end])  start = mid+1;
-                else    end = mid;
+            // back is sorted
+            else if(nums[mid] < nums[hi]){
+                if(target > nums[mid] && target <= nums[hi])    lo = mid+1;
+                else    hi = mid-1;
             }
-            // duplicates: shrink
-            else    end--;
+            else    hi--; // nums[mid] == nums[lo] == nums[hi]
         }
-        return nums[start] == target;
+        return false;
     }
 }
