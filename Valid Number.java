@@ -1,37 +1,49 @@
 class Solution {
     public boolean isNumber(String s) {
+        boolean dotFlag = false, signFlag = false, digitFlag = false;
+        int ePos = -1;
         s = s.trim();
+        if(s.length() == 0) return false;
+        char[] cs = s.toCharArray();
         
-        int n = s.length();
-        if(n == 0)  return false;
-        
-        boolean hasDigit = false;
-        boolean digitAfterE = false;
-        boolean hasE = false;
-        boolean hasDot = false;
-        
-        
-        for(int i = 0; i < s.length(); i++){
-            if(Character.isDigit(s.charAt(i))){
-                hasDigit = true;
-                digitAfterE = true;
+        // sign, digit, dot, e
+        for(int i = 0; i < cs.length; i++) {
+            char c = cs[i];
+            
+            // sign: only 1 at each part start
+            if(c == '+' || c == '-') {
+                if(signFlag)    return false;
+                if(i == 0 || i == ePos+1 && i < cs.length) {
+                    signFlag = true;
+                }
+                else    return false;
             }
-            else if(s.charAt(i) == '.'){
-                if(hasE || hasDot)  return false;
-                hasDot = true;
+            
+            // e: only 1, can't be first, reset sign and digit, digit before and after(after is check at the end)
+            else if(c == 'e') {
+                if(ePos != -1 || i == 0 || !digitFlag) return false;
+                signFlag = false;
+                digitFlag = false;
+                ePos = i;
             }
-            else if(s.charAt(i) == 'e'){
-                if(hasE || !hasDigit)    return false;
-                // reset digit after e if e is found
-                digitAfterE = false;
-                hasE = true;
+            
+            // dot: only 1 at integer part, digit before or after
+            else if(c == '.') {
+                if(dotFlag || ePos != -1)    return false;
+                if(digitFlag || i != cs.length-1 && Character.isDigit(cs[i+1])) {
+                    dotFlag = true;
+                }
+                else    return false;
             }
-            else if(s.charAt(i) == '+' || s.charAt(i) == '-'){
-                if(i != 0 && s.charAt(i-1) != 'e')  return false;
+            
+            // digits
+            else if(Character.isDigit(c)) {
+                digitFlag = true;
             }
+            
             else    return false;
         }
-        
-        return hasDigit && digitAfterE;
+        // check if no digit after e
+        return ePos==-1 || digitFlag;
     }
 }
