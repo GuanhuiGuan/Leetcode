@@ -9,56 +9,55 @@
  */
 class Solution {
     public int maxPoints(Point[] points) {
-        int n = points.length;
-        if(n == 0)  return 0;
-        if(n <= 2)  return n;
-        int f = 0;
         Map<Integer, Map<Integer, Integer>> map = new HashMap<>();
+        int res = 0;
+        if(points.length < 2)   return points.length;
         
-        // start from 0 to n-2 points
-        for(int i = 0; i < n; i++){
+        for(int i = 0; i < points.length; i++) {
+            // CLEAR MAP EVERY TIME!
             map.clear();
-            int duplicate = 1; // the point itself counts 1
-            int maxC = 0;
-            
-            for(int j = i+1; j < n; j++){
+            int dpc = 0, maxLine = 0;
+            for(int j = i+1; j < points.length; j++) {
                 int dx = points[i].x - points[j].x;
                 int dy = points[i].y - points[j].y;
-                
-                // duplicate points
-                if(dx == 0 && dy == 0){
-                    duplicate++;
+                // duplicate
+                if(dx == 0 && dy == 0) {
+                    dpc++;
                     continue;
-                }  
-                
-                int gcd = getGCD(dx, dy);
-                if(gcd != 0){
+                }
+                // online
+                int gcd = getGcd(dx, dy);
+                if(gcd != 0) {
                     dx /= gcd;
                     dy /= gcd;
                 }
-                if(map.containsKey(dx)){
-                    if(map.get(dx).containsKey(dy)){
-                        map.get(dx).put(dy, map.get(dx).get(dy)+1);
+                if(map.containsKey(dx)) {
+                    Map<Integer, Integer> tm = map.get(dx);
+                    if(tm.containsKey(dy)) {
+                        tm.put(dy, tm.get(dy)+1);
                     }
-                    else{
-                        map.get(dx).put(dy, 1);
+                    else {
+                        tm.put(dy, 1);
                     }
                 }
-                else{
-                    Map<Integer, Integer> m = new HashMap<>();
-                    m.put(dy, 1);
-                    map.put(dx, m);
+                else {
+                    Map<Integer, Integer> tm = new HashMap<>();
+                    tm.put(dy, 1);
+                    map.put(dx, tm);
                 }
-                maxC = Math.max(map.get(dx).get(dy), maxC);
+                maxLine = Math.max(maxLine, map.get(dx).get(dy));
             }
-            f = Math.max(f, duplicate+maxC);
+            res = Math.max(res, dpc+maxLine+1);
         }
-        return f;
+        return res;
     }
     
-    // greatest common devisor
-    public int getGCD(int a, int b){
-        if(b == 0)  return a;
-        return getGCD(b, a%b);
+    public int getGcd(int x, int y) {
+        while(y != 0) {
+            int t = x;
+            x = y;
+            y = t%y;
+        }
+        return x;
     }
 }
