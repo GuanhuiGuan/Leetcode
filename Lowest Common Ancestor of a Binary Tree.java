@@ -8,62 +8,49 @@
  * }
  */
 class Solution {
-    // recursion
-    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        if(root == null || root == p || root == q)  return root;
-        TreeNode ln = lowestCommonAncestor(root.left, p, q);
-        TreeNode rn = lowestCommonAncestor(root.right, p, q);
-        if(ln == null && rn == null)    return null;
-        if(ln == null)  return rn;
-        if(rn == null)  return ln;
-        return root;
-    }
+    // // recursion
+    // public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    //     if(root == null || root == p || root == q)  return root;
+    //     TreeNode ln = lowestCommonAncestor(root.left, p, q);
+    //     TreeNode rn = lowestCommonAncestor(root.right, p, q);
+    //     if(ln == null && rn == null)    return null;
+    //     if(ln == null)  return rn;
+    //     if(rn == null)  return ln;
+    //     return root;
+    // }
+    
     // iteration
-    class LinkNode {
-        TreeNode node;
-        LinkNode parent;
-        boolean visited = false;
-        List<TreeNode> result = new ArrayList<>();
-        public LinkNode(LinkNode p, TreeNode n) {
-            parent = p;
-            node = n;
-        }
-    }
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        LinkNode dr = new LinkNode(null, null);
-        LinkNode r = new LinkNode(dr, root);
-        Stack<LinkNode> stack = new Stack<>();
-        stack.push(r);
+        Stack<TreeNode> stack = new Stack<>();
+        // the map to store the <node, node's parent>
+        Map<TreeNode, TreeNode> parent = new HashMap<>();
+        if(root == null)    return root;
+        stack.push(root);
+        parent.put(root, null);
         
-        while(!stack.isEmpty()) {
-            LinkNode node = stack.peek();
-            LinkNode parent = node.parent;
-            TreeNode cur = node.node;
-            
-            // reach leaf or target: add result to parent, done with the node
-            if(cur == null || cur == p || cur == q) {
-                parent.result.add(cur);
-                stack.pop();
+        // find the parent of p and q
+        while(!(parent.containsKey(p) && parent.containsKey(q))) {
+            TreeNode node = stack.pop();
+            if(node.left != null) {
+                stack.push(node.left);
+                parent.put(node.left, node);
             }
-            // not visited: insert children, right first because it's a stack
-            else if(!node.visited) {
-                node.visited = true;
-                LinkNode ln = new LinkNode(node, cur.left);
-                LinkNode rn = new LinkNode(node, cur.right);
-                stack.push(rn);
-                stack.push(ln);
-            }
-            // visited: result list has two results, update parent's result
-            else if(node.visited){
-                TreeNode ln = node.result.get(0);
-                TreeNode rn = node.result.get(1);
-                if(ln != null && rn != null)    parent.result.add(cur);
-                else if(ln != null) parent.result.add(ln);
-                else    parent.result.add(rn);
-                // done with this node
-                stack.pop();
+            if(node.right != null) {
+                stack.push(node.right);
+                parent.put(node.right, node);
             }
         }
-        return dr.result.get(0);
+        
+        // find all parents of p
+        Set<TreeNode> parent_of_p = new HashSet<>();
+        while(p != null) {
+            parent_of_p.add(p);
+            p = parent.get(p);
+        }
+        // find the closest parent of q in the parent_of_p
+        while(!parent_of_p.contains(q)) {
+            q = parent.get(q);
+        }
+        return q;
     }
 }
