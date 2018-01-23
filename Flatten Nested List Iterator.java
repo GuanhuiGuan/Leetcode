@@ -16,35 +16,33 @@
  * }
  */
 public class NestedIterator implements Iterator<Integer> {
+    // stack better than queue, save space complexity(not saving all at one time)
     Stack<NestedInteger> stack = new Stack<>();
 
     public NestedIterator(List<NestedInteger> nestedList) {
-        for(int i = nestedList.size()-1; i >= 0; i--){
-            NestedInteger ni = nestedList.get(i);
-            stack.push(ni);
+        for(int i = nestedList.size()-1; i >= 0; i--) {
+            stack.push(nestedList.get(i));
         }
     }
 
     @Override
     public Integer next() {
-        NestedInteger ni = stack.pop();
-        return ni.getInteger();
+        return stack.pop().getInteger();
     }
 
     @Override
     public boolean hasNext() {
-        // skip all empty lists
+        // the loop eliminates empty nested lists
         while(!stack.isEmpty()) {
-            NestedInteger ni = stack.pop();
-            if(!ni.isInteger()) {
-                List<NestedInteger> list = ni.getList();
-                for(int i = list.size()-1; i >= 0; i--){
-                    stack.push(list.get(i));
-                }
-            }
-            else {
-                stack.push(ni);
-                return true;
+            // check data type
+            NestedInteger top = stack.peek();
+            // is integer, just return
+            if(top.isInteger()) return true;
+            // otherwise, expand and input
+            stack.pop();
+            List<NestedInteger> list = top.getList();
+            for(int i = list.size()-1; i >= 0; i--) {
+                stack.push(list.get(i));
             }
         }
         return false;
