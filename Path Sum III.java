@@ -8,16 +8,18 @@
  * }
  */
 class Solution {
-    // sum unchanged, try to use every node as starting node
+    // 2 recursions, in 2 methods
+    
     public int pathSum(TreeNode root, int sum) {
+        // recurse to find sum starting from every node
         if(root == null)    return 0;
-        return search(root, sum) + pathSum(root.left, sum) + pathSum(root.right, sum);
+        return traverse(root, sum) + pathSum(root.left, sum) + pathSum(root.right, sum);
     }
     
-    // sum decrement
-    public int search(TreeNode node, int sum) {
+    public int traverse(TreeNode node, int sum) {
+        // recurse to find path starting from some parent
         if(node == null)    return 0;
-        int cnt = (node.val == sum)? 1: 0;
-        return cnt + search(node.left, sum-node.val) + search(node.right, sum-node.val);
+        int count = sum == node.val? 1: 0;
+        return count + traverse(node.left, sum-node.val) + traverse(node.right, sum-node.val);
     }
 }
