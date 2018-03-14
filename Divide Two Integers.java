@@ -1,27 +1,24 @@
 class Solution {
     public int divide(int dividend, int divisor) {
-        // 0 divisor || overflow
-        if(divisor == 0 || dividend == Integer.MIN_VALUE && divisor == -1)    return Integer.MAX_VALUE;
-
-        int sign = ((dividend > 0)^(divisor > 0)) ? -1 : 1;
+        // overflow: divisor==0 || dividend==min && divisor==-1
+        if(divisor == 0 || dividend == Integer.MIN_VALUE && divisor == -1)  return Integer.MAX_VALUE;
+        // find sign with exclusive or
+        int sign = ((divisor < 0) ^ (dividend < 0))? -1: 1;
+        long endLong = Math.abs((long)dividend), sorLong = Math.abs((long)divisor);
         
-        // inside abs should also transformed to long, otherwise overflow
-        long dvd = Math.abs((long)dividend);
-        long dvs = Math.abs((long)divisor);
-        
-        int quo = 0;
-        while(dvs <= dvd){
-            // outer loop handles odd number of products
-            long temp = dvs, mul = 1;
-            while((temp<<1) <= dvd){
-                // inner loop handles even number of products
-                mul <<= 1;
-                temp <<= 1;
-            }
-            dvd -= temp;
-            quo += mul;
+        long count = sign * divHelper(endLong, sorLong);
+        return (int)count;
+    }
+    
+    public long divHelper(long endLong, long sorLong) {
+        if(endLong < sorLong) return 0;
+        // recursion
+        long sum = sorLong;
+        long count = 1;
+        while(endLong >= sum + sum) {
+            sum += sum;
+            count += count;
         }
-        
-        return sign == 1? quo: -quo;
+        return count + divHelper(endLong - sum, sorLong);
     }
 }
