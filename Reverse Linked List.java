@@ -7,41 +7,34 @@
  * }
  */
 class Solution {
-    // // Iterative
-    // public ListNode reverseList(ListNode head) {
-    //     ListNode front = head, back = null;
-    //     while(front != null) {
-    //         // save the advanced node ahead of front, fix front's next
-    //         ListNode adv = front.next;
-    //         front.next = back;
-    //         // both nodes move forward
-    //         back = front;
-    //         front = adv;
-    //     }
-    //     // front is now null
-    //     return back;
-    // }
-    
-//     // Recursive 2 nodes
-//     public ListNode reverseList(ListNode head) {
-//         return iterative(head, null);
-//     }
-    
-//     public ListNode iterative(ListNode front, ListNode back) {
-//         if(front == null)   return back;
-//         ListNode adv = front.next;
-//         front.next = back;
-//         return iterative(adv, front);
-//     }
-    
-    // Recursive 1 node
+    // recursion
     public ListNode reverseList(ListNode head) {
-        // one node, head is back and head.next is front, get node in the future first
-        if(head == null || head.next == null)   return head;
-        ListNode newHead = reverseList(head.next);
-        // reverse current 2 nodes
-        head.next.next = head;
-        head.next = null;
+        // use helper with two input nodes, one for attach at end, one for unprocessed part
+        return helper(head, null);
+    }
+    
+    public ListNode helper(ListNode unPro, ListNode tail) {
+        // unPro: head of unprocessed; tail: what to attach at the tail
+        if(unPro == null) return tail;
+        ListNode nextUnPro = unPro.next;
+        unPro.next = tail;
+        ListNode newHead = helper(nextUnPro, unPro);
         return newHead;
+    }
+    
+    
+    // iterative
+    public ListNode reverseList(ListNode head) {
+        if(head == null) return head;
+        // cur cannot be root
+        ListNode root = new ListNode(0), cur = head, next = head.next;
+        root.next = head;
+        while(next != null) {
+            cur.next = next.next;
+            next.next = root.next;
+            root.next = next;
+            next = cur.next;
+        }
+        return root.next;
     }
 }
