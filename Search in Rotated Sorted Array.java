@@ -1,30 +1,33 @@
 class Solution {
     public int search(int[] nums, int target) {
-        int n = nums.length;
-        // binary search
-        if(n == 0)    return -1;
-        // find min
-        int start = 0, end = n - 1;
-        while(start < end){
-            int mid = (start + end)/2;
-            // if mid greater, min cannot be mid, and thus move 1 step beyond
-            if(nums[mid] > nums[end]) start = mid + 1;
-            //could be mid here
-            else    end = mid;
+        if(nums == null || nums.length == 0) return -1;
+        return findTar(nums, target, findRot(nums));
+    }
+    
+    public int findRot(int[] nums) {
+        int low = 0, high = nums.length - 1;
+        while(low < high) {
+            int mid = low + (high - low) / 2;
+            if(nums[mid] > nums[high])  low = mid + 1;
+            else    high = mid;
         }
-       
-        int rotation = start;
-        
-        // rotate the mid
-        start = 0;
-        end = nums.length - 1;
-        while(start <= end){
-            int mid = (start + end)/2;
-            int rotMid = (mid+rotation)%n;
-            if(target == nums[rotMid])  return rotMid;
-            else if(target < nums[rotMid]) end = mid - 1;
-            else    start = mid + 1;
+        return low;
+    }
+    
+    public int findTar(int[] nums, int target, int rot) {
+        int low = 0, high = nums.length - 1, n = nums.length, rotMid = low;
+        while(low <= high) {
+            int mid = low + (high - low) / 2;
+            rotMid = getRotMid(rot, mid, n);
+            if(nums[rotMid] == target) break;
+            if(nums[rotMid] > target)   high = mid - 1;
+            else    low = mid + 1;
         }
-        return -1;
+        return nums[rotMid] == target? rotMid: -1;
+        // return nums[rotMid] < target? rotMid + 1: rotMid;
+    }
+    
+    public int getRotMid(int rot, int mid, int n) {
+        return (mid + rot) % n;
     }
 }
