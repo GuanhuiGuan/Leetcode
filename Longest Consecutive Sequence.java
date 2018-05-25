@@ -1,26 +1,26 @@
 class Solution {
     public int longestConsecutive(int[] nums) {
-        // hashmap(end, length): save the length, marked by endpoints
-        // for new input, connect both ends
+        if(nums == null || nums.length == 0) return 0;
         Map<Integer, Integer> map = new HashMap<>();
-        int maxL = 0;
-        
-        for(int n: nums){
+        int res = 0;
+        for(int num: nums) {
             // skip duplicates
-            if(map.containsKey(n)){
+            if(map.containsKey(num)) {
                 continue;
             }
-            else{
-                int lLen = map.containsKey(n-1)? map.get(n-1): 0;
-                int rLen = map.containsKey(n+1)? map.get(n+1): 0;
-                int len = lLen + 1 + rLen;
-                // save n and both endpoints
-                map.put(n, len);
-                map.put(n-lLen, len);
-                map.put(n+rLen, len);
-                maxL = Math.max(maxL, len);
+            else {
+                // get left and right neighbors lengths
+                int left = map.containsKey(num - 1)? map.get(num - 1): 0;
+                int right = map.containsKey(num + 1)? map.get(num + 1): 0;
+                
+                int curLen = 1 + left + right;
+                res = Math.max(res, curLen);
+                map.put(num, curLen);
+                // also update neighbors
+                map.put(num - left, curLen);
+                map.put(num + right, curLen);
             }
         }
-        return maxL;
+        return res;
     }
 }
