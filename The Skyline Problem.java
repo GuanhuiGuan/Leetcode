@@ -1,51 +1,45 @@
 class Solution {
+    Map<Integer, List<int[]>> map = new TreeMap<>();
+    Queue<int[]> heap;
+    
     public List<int[]> getSkyline(int[][] buildings) {
-        // result
-        List<int[]> re = new ArrayList<int[]>();
-        // ordered a list of rectangles for each criticl points
-        Map<Integer, List<int[]>> pts = new TreeMap<Integer, List<int[]>>();
-        for(int[] bd: buildings){
-            pts.putIfAbsent(bd[0], new ArrayList<>());
-            pts.putIfAbsent(bd[1], new ArrayList<>());
-            pts.get(bd[0]).add(bd);
-            pts.get(bd[1]).add(bd);
-        }
-        // heap: ordered buildings by height(max heap)
-        Queue<int[]> heap = new PriorityQueue<int[]>(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] i1, int[] i2){
-                // reverse for maxheap
-                return i2[2]-i1[2];
+        List<int[]> res = new ArrayList<>();
+        
+        // Treemap to store buildings at each spot
+        initMap(buildings);
+        
+        // Heap to store buildings sorted with height descendingly
+        heap = new PriorityQueue<int[]>(new Comparator<int[]>() {
+            public int compare(int[] o1, int[] o2) {
+                return o2[2] - o1[2];
             }
         });
         
-        // sweep through every pt
-        for(Map.Entry<Integer, List<int[]>> pt: pts.entrySet()){
-            int x = pt.getKey();
-            List<int[]> bds = pt.getValue();
-            
-            // update heap with start
-            for(int[] bd: bds){
-                if(bd[0] == x){
-                    heap.add(bd);
-                }
-                else{
-                    heap.remove(bd);
-                }
+        // Update heap when sweeping through
+        for(int key: map.keySet()) {
+            List<int[]> list = map.get(key);
+            // update heap
+            for(int[] building: list) {
+                if(key == building[1])  heap.remove(building);
+                else    heap.offer(building);
             }
-            
-            // get height(0 or maxh if no duplicate)
-            if(heap.isEmpty()){
-                re.add(new int[] {x, 0});
-            }
-            else{
-                int height = heap.peek()[2];
-                if(re.isEmpty() || re.get(re.size()-1)[1] != height){
-                    re.add(new int[] {x, height});
-                }
+            // update res
+            if(heap.isEmpty())  res.add(new int[] {key, 0});
+            else {
+                int h = heap.peek()[2];
+                // only add if empty or not same as before
+                if(res.isEmpty() || res.get(res.size()-1)[1] != h)  res.add(new int[] {key, h});
             }
         }
-        
-        return re;
+        return res;
+    }
+    
+    public void initMap(int[][] buildings) {
+        for(int[] building: buildings) {
+            map.putIfAbsent(building[0], new ArrayList<>());
+            map.putIfAbsent(building[1], new ArrayList<>());
+            map.get(building[0]).add(building);
+            map.get(building[1]).add(building);
+        }
     }
 }
