@@ -1,15 +1,13 @@
 class Solution {
     public int mySqrt(int x) {
         if(x == 0)  return 0;
-        // avoid division by 0
-        int lo = 1, hi = x;
+        int l = 1, h = x;
         while(true) {
-            int mid = lo + (hi-lo)/2;
-            if(mid > x/mid) hi = mid-1;
+            int m = l + (h - l) / 2;
+            if(m > x / m)   h = m - 1;
             else {
-                // mid^2 <= x, if (mid+1)^2 > x, return mid
-                if((mid+1) > x/(mid+1)) return mid;
-                lo = mid+1;
+                if(m + 1 > x / (m + 1)) return m;
+                l = m + 1;
             }
         }
     }
