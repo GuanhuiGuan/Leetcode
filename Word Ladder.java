@@ -1,84 +1,80 @@
 class Solution {
     public int ladderLength(String beginWord, String endWord, List<String> wordList) {
-        // 2-way BFS, swap start with end if end size < start
-        Set<String> ss = new HashSet<>(), se = new HashSet<>();
-        Set<String> used = new HashSet<>(), ws = new HashSet<>(wordList);
+        // return oneBFS(beginWord, endWord, wordList);
+        return twoBFS(beginWord, endWord, wordList);
+    }
+    
+    public int twoBFS(String bw, String ew, List<String> wl) {
+        if(!wl.contains(ew))    return 0;
         
-        if(!ws.contains(endWord))   return 0;
-        ss.add(beginWord);
-        se.add(endWord);
+        // use wordset to store wordlist to speed up
+        Set<String> start = new HashSet<>(), end = new HashSet<>(), used = new HashSet<>(), ws = new HashSet<>(wl);
+        start.add(bw);
+        end.add(ew);
         
-        // ss to se is at least 1 step away
-        int len = 1;
-        while(!ss.isEmpty() && !se.isEmpty()) {
-            // swap if size check failed
-            if(ss.size() > se.size()) {
-                Set<String> temp = ss;
-                ss = se;
-                se = temp;
+        int k = 1;
+        while(!start.isEmpty() && !end.isEmpty()) {
+            if(start.size() > end.size()) {
+                Set<String> t = start;
+                start = end;
+                end = t;
             }
             
-            // new set to save new found words, swap with ss at the end of this lvl
             Set<String> next = new HashSet<>();
-            for(String s: ss) {
-                
-                
-                
-                char[] cs = s.toCharArray();
-                for(int i = 0; i < s.length(); i++) {
-                    char t = cs[i];
+            for(String word: start) {
+                char[] cs = word.toCharArray();
+                for(int i = 0; i < cs.length; i++) {
+                    char ori = cs[i];
                     for(char c = 'a'; c <= 'z'; c++) {
-                        if(c == t)  continue;
+                        if(c == ori)    continue;
                         cs[i] = c;
-                        String ns = String.valueOf(cs);
-                        
-                        // one extra step has been made in this double loop
-                        if(se.contains(ns))    return len+1;
-                        // in ws and not in used
-                        if(ws.contains(ns) && used.add(ns))   next.add(ns);
+                        // String nw = new String(cs);
+                        String nw = String.valueOf(cs);
+                        // one extra step is made
+                        if(end.contains(nw)) return k + 1;
+                        if(used.contains(nw))   continue;
+                        if(ws.contains(nw)) {
+                            next.add(nw);
+                            used.add(nw);
+                        }
                     }
-                    cs[i] = t;
+                    cs[i] = ori;
                 }
             }
-            // move on to next lvl
-            ss = next;
-            len++;
+            start = next;
+            k++;
+        }
+        return 0;
+    }
+    
+    public int oneBFS(String bw, String ew, List<String> wl) {
+        if(!wl.contains(ew))    return 0;
+        Queue<String> q = new LinkedList<>();
+        Set<String> used = new HashSet<>();
+        q.offer(bw);
+        int k = 1;
+        
+        while(!q.isEmpty()) {
+            for(int cur = q.size(); cur > 0; cur--) {
+                String word = q.poll();
+                if(word.equals(ew)) return k;
+
+                char[] cs = word.toCharArray();
+                for(int i = 0; i < cs.length; i++) {
+                    char ori = cs[i];
+                    for(char c = 'a'; c <= 'z'; c++) {
+                        if(c == ori)    continue;
+                        cs[i] = c;
+                        String nw = new String(cs);
+                        if(used.contains(nw))   continue;
+                        used.add(nw);
+                        if(wl.contains(nw)) q.offer(nw);
+                    }
+                    cs[i] = ori;
+                }
+            }
+            k++;
         }
         return 0;
     }
 }
-
-// // one way BFS
-// class Solution {
-//     public int ladderLength(String beginWord, String endWord, List<String> wordList) {
-//         Set<String> used = new HashSet<>(), ws = new HashSet<>(wordList); // set wordlist saves time
-//         int count = 1; // when return, count is still at last iteration, thus initial set to 1
-//         Queue<String> q = new LinkedList<>();
-        
-//         q.offer(beginWord);
-//         while(!q.isEmpty()) {
-//             // visit all in this lvl in order to count lvls to find target
-//             for(int k = q.size(); k > 0; k--) {
-//                 String s = q.poll();
-//                 if(s.equals(endWord))   return count;
-                
-//                 // check every char of word, for 26 letters
-//                 char[] cs = s.toCharArray();
-//                 for(int i = 0; i < s.length(); i++) {
-//                     char c = cs[i];
-//                     for(char nc = 'a'; nc <= 'z'; nc++) {
-//                         if(nc == c) continue;
-//                         cs[i] = nc;
-//                         // use valueOf() to merge them into string, otherwise toString() keeps commas
-//                         String ns = String.valueOf(cs);
-//                         // in list and not visited
-//                         if(ws.contains(ns) && used.add(ns))   q.offer(ns);
-//                     }
-//                     cs[i] = c;
-//                 }
-//             }
-//             count++;
-//         }
-//         return 0;
-//     }
-// }
