@@ -1,36 +1,34 @@
 class Solution {
-    List<String> re = new ArrayList<>();
+    List<String> res = new ArrayList<>();
     
     public List<String> removeInvalidParentheses(String s) {
-        // DFS sweep, left->right search ), right to left search (
         dfs(s, 0, 0, new char[] {'(', ')'});
-        return re;
+        if(res.isEmpty())   res.add("");
+        return res;
     }
     
-    public void dfs(String s, int is, int js, char[] prt) {
-        int counter = 0;
-        // sweep till invalid position
-        for(int i = is; i < s.length(); i++) {
-            if(s.charAt(i) == prt[0])   counter++;
-            if(s.charAt(i) == prt[1])   counter--;
-            if(counter >= 0)    continue;
-            // choose one to delete from j-start to i
-            for(int j = js; j <= i; j++) {
-                // find the one as first in several repetitive ones
-                // start from j since we could remove multiple in a sequence e.g. ((()
-                if(s.charAt(j) == prt[1] && (j == js || s.charAt(j-1) != prt[1])) {
-                    dfs(s.substring(0, j) + s.substring(j+1), i, j, prt);
+    public void dfs(String s, int ist, int jst, char[] marks) {
+        int count = 0;
+        for(int i = ist; i < s.length(); i++) {
+            if(s.charAt(i) == marks[0]) count++;
+            if(s.charAt(i) == marks[1]) count--;
+            if(count >= 0)  continue;
+            // j could go up to i to delete last char
+            for(int j = jst; j <= i; j++) {
+                if(s.charAt(j) == marks[1] && (j == 0 || s.charAt(j-1) != s.charAt(j))) {
+                    dfs(s.substring(0, j) + s.substring(j+1), i, j, marks);
                 }
             }
-            // no need to keep going since only find the first invalid
+            // just find the earliest fix
             return;
         }
         
-        // only valid strings(from 1 direction) would reach here
-        // check if backwards has been checked
-        String rs = new StringBuilder(s).reverse().toString();
-        if(prt[0] == '(')   dfs(rs, 0, 0, new char[] {')', '('});
-        // else, both ways check, reverse and save
-        else    re.add(rs);
+        // check the other side if this side works
+        String rev = new StringBuilder(s).reverse().toString();
+        // reverse to correct order
+        if(marks[1] == '(') res.add(rev);
+        else {
+            dfs(rev, 0, 0, new char[] {')', '('});
+        }
     }
 }
