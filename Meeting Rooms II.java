@@ -9,77 +9,28 @@
  */
 class Solution {
     public int minMeetingRooms(Interval[] intervals) {
-        // use minimum heap(end) for merged intervals(meeting rooms)
-        int n = intervals.length;
-        if(n == 0)  return 0;
-        
-        Comparator<Interval> cmp_st = new Comparator<Interval>() {
-            @Override
-            public int compare(Interval i1, Interval i2){
-                return i1.start - i2.start;
+        // sort meetings with start time
+        // heap to store rooms sorted with end time
+        if(intervals == null || intervals.length == 0)   return 0;
+        Arrays.sort(intervals, new Comparator<Interval>() {
+            public int compare(Interval o1, Interval o2) {
+                return o1.start - o2.start;
             }
-        };
+        });
         
-        Comparator<Interval> cmp_end = new Comparator<Interval>() {
-            @Override
-            public int compare(Interval i1, Interval i2){
-                return i1.end - i2.end;
+        Queue<Interval> heap = new PriorityQueue<>(new Comparator<Interval>() {
+            public int compare(Interval o1, Interval o2) {
+                return o1.end - o2.end;
             }
-        };
+        });
         
-        Arrays.sort(intervals, cmp_st);
-        Queue<Interval> mi = new PriorityQueue<>(cmp_end);
-        mi.offer(intervals[0]);
-        
-        for(int i = 1; i < n; i++){
-            // the room with earliest end time
-            Interval room = mi.poll();
-            if(room.end <= intervals[i].start){
-                room.end = intervals[i].end;
-            }
-            else{
-                mi.offer(intervals[i]);
-            }
-            mi.offer(room);
+        heap.offer(intervals[0]);
+        for(int i = 1; i < intervals.length; i++) {
+            Interval o = intervals[i], cur = heap.poll();
+            if(o.start < cur.end)   heap.offer(o);
+            else    cur.end = o.end;
+            heap.offer(cur);
         }
-        
-        return mi.size();
+        return heap.size();
     }
-    
-    /*
-    // original AC solution
-    public int minMeetingRooms(Interval[] intervals) {
-        int n = intervals.length;
-        if(n == 0)  return 0;
-        
-        List<Integer> endTime = new ArrayList<>();
-        // endTime.add(intervals[0].end);
-        
-        Comparator<Interval> cmp = new Comparator<Interval>() {
-            @Override
-            public int compare(Interval i1, Interval i2){
-                return i1.start - i2.start;
-            }
-        };
-        
-        Arrays.sort(intervals, cmp);
-        for(int i = 0; i < n; i++){
-            int j = 0;
-            while(j < endTime.size()){
-                // can hold i in Room j
-                if(intervals[i].start >= endTime.get(j)){
-                    endTime.set(j, intervals[i].end);
-                    break;
-                }
-                j++;
-            }
-            // can't find a meeting room
-            if(j == endTime.size()){
-                endTime.add(intervals[i].end);
-            }
-        }
-        
-        return endTime.size();
-    }
-    */
 }
