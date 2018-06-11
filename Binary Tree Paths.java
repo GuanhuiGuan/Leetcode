@@ -8,22 +8,25 @@
  * }
  */
 class Solution {
-    List<String> re = new ArrayList<>();
+    List<String> res = new ArrayList<>();
     
     public List<String> binaryTreePaths(TreeNode root) {
-        if(root == null)    return re;
+        if(root == null)    return res;
         dfs(root, "");
-        return re;
+        return res;
     }
     
-    public void dfs(TreeNode node, String s) {
-        if(!s.equals(""))    s += "->";
-        s += node.val;
+    public void dfs(TreeNode node, String path) {
+        String newPath = path + node.val;
         if(node.left == null && node.right == null) {
-            re.add(s);
+            res.add(newPath);
             return;
         }
-        if(node.left != null)   dfs(node.left, s);
-        if(node.right != null)  dfs(node.right, s);
+        if(node.left != null) {
+            dfs(node.left, newPath + "->");
+        }
+        if(node.right != null) {
+            dfs(node.right, newPath + "->");
+        }
     }
 }
