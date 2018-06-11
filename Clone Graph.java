@@ -10,14 +10,21 @@ public class Solution {
     Map<Integer, UndirectedGraphNode> map = new HashMap<>();
     
     public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
-        if(node == null)    return null;
-        if(map.containsKey(node.label))   return map.get(node.label);
+        if(node == null)    return node;
+        return dfs(node);
+    }
+    
+    public UndirectedGraphNode dfs(UndirectedGraphNode node) {
+        if(map.containsKey(node.label)) return map.get(node.label);
+        UndirectedGraphNode newNode = new UndirectedGraphNode(node.label);
+        // save to map before recursion to avoid inf. loop
+        // neighbors will be automatically added to the node saved
+        map.put(newNode.label, newNode);
         
-        UndirectedGraphNode cn = new UndirectedGraphNode(node.label);
-        map.put(cn.label, cn);
-        for(UndirectedGraphNode next: node.neighbors) {
-            cn.neighbors.add(cloneGraph(next));
+        List<UndirectedGraphNode> nbrs = node.neighbors;
+        for(UndirectedGraphNode nbr: nbrs) {
+            newNode.neighbors.add(dfs(nbr));
         }
-        return cn;
+        return newNode;
     }
 }
