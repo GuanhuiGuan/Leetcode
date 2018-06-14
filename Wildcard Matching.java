@@ -1,38 +1,29 @@
 class Solution {
     public boolean isMatch(String s, String p) {
-        int m = s.length(), n = p.length();
-        int i = 0, j = 0, ast = -1, s_ast = 0;
-        // no dp this problem since it's not related to previous one or two char
-        // dual ptrs
-        
-        // iterate s
-        while(i < m) {
-            // match: both move forward
-            if(j < n && (p.charAt(j) == '?' || s.charAt(i) == p.charAt(j))){
+        int i = 0, j = 0, li = 0, lj = -1, sLen = s.length(), pLen = p.length();
+        while(i < sLen) {
+            // match chars: advance i and j
+            if(j < pLen && (s.charAt(i) == p.charAt(j) || p.charAt(j) == '?')) {
                 i++;
                 j++;
             }
-            // asterisk: mark the position and the corresponding one in s
-            else if(j < n && p.charAt(j) == '*') {
-                ast = j;
+            // j -> *: mark both positions and advance j
+            else if(j < pLen && p.charAt(j) == '*') {
+                li = i;
+                lj = j;
                 j++;
-                s_ast = i;
             }
-            // found asterisk before: set j to after ast, s_ast forward(matches)
-            else if(ast != -1) {
-                j = ast + 1;
-                s_ast++;
-                i = s_ast;
+            // last j pos -> *: set j = lj + 1, advance i, and li(* match more substring of s)
+            else if(lj != -1) {
+                j = lj + 1;
+                li++;
+                i = li;
             }
-            // unmatched and no asterisk: false
-            else {
-                return false;
-            }
+            // others
+            else    return false;
         }
-        // iterate the rest of p, must be asterisk to continue
-        while(j < n && p.charAt(j) == '*'){
-            j++;
-        }
-        return j==n;
+        // check if rest of p being *
+        while(j < pLen && p.charAt(j) == '*')   j++;
+        return j == pLen;
     }
 }
