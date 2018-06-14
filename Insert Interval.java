@@ -9,19 +9,21 @@
  */
 class Solution {
     public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
-        // maybe a new list is better, remove() is not efficient
-        // 3 loops for 3 phases
-        List<Interval> re = new ArrayList<>();
-        int i = 0, n = intervals.size();
-        while(i < n && intervals.get(i).end < newInterval.start) {
-            re.add(intervals.get(i++));
+        List<Interval> res = new ArrayList<>();
+        for(Interval it: intervals) {
+            if(newInterval.end < it.start) {
+                res.add(new Interval(newInterval.start, newInterval.end));
+                newInterval = it;
+            }
+            else if(newInterval.start > it.end) {
+                res.add(it);
+            }
+            else {
+                newInterval.start = Math.min(newInterval.start, it.start);
+                newInterval.end = Math.max(newInterval.end, it.end);
+            }
         }
-        while(i < n && intervals.get(i).start <= newInterval.end) {
-            newInterval.start = Math.min(newInterval.start, intervals.get(i).start);
-            newInterval.end = Math.max(newInterval.end, intervals.get(i++).end);
-        }
-        re.add(newInterval);
-        while(i < n)    re.add(intervals.get(i++));
-        return re;
+        res.add(newInterval);
+        return res;
     }
 }
