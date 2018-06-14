@@ -1,4 +1,5 @@
 class RandomizedSet {
+    
     Map<Integer, Integer> map = new HashMap<>();
     List<Integer> list = new ArrayList<>();
     Random rand = new Random();
@@ -10,9 +11,7 @@ class RandomizedSet {
     
     /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
     public boolean insert(int val) {
-        if(map.containsKey(val)) {
-            return false;
-        }
+        if(map.containsKey(val))    return false;
         map.put(val, list.size());
         list.add(val);
         return true;
@@ -20,28 +19,28 @@ class RandomizedSet {
     
     /** Removes a value from the set. Returns true if the set contained the specified element. */
     public boolean remove(int val) {
-        if(map.containsKey(val)) {
-            // swap with last num, remove last(remember to reset map too)
-            if(map.get(val) != list.size()-1) {
-                map.put(list.get(list.size()-1), map.get(val));
-                swap(map.get(val), list.size()-1);
-            }
-            list.remove(list.size()-1);
-            map.remove(val);
-            return true;
-        }
-        else    return false;
-    }
-    
-    public void swap(int i, int j) {
-        int t = list.get(j);
-        list.set(j, list.get(i));
-        list.set(i, t);
+        if(!map.containsKey(val))   return false;
+        // Swap with last
+        int index = map.get(val);
+        int n = list.size();
+        map.put(list.get(n-1), index);
+        map.remove(val);
+        swap(index, n-1);
+        list.remove(n-1);
+        return true;
     }
     
     /** Get a random element from the set. */
     public int getRandom() {
-        return list.get(rand.nextInt(list.size()));
+        int ri = rand.nextInt(list.size());
+        return list.get(ri);
+    }
+    
+    /** Swap elements. */
+    public void swap(int i, int j) {
+        int t = list.get(i);
+        list.set(i, list.get(j));
+        list.set(j, t);
     }
 }
 
