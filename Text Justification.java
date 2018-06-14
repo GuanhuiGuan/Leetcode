@@ -1,59 +1,60 @@
 class Solution {
+    List<String> res = new ArrayList<>();
+    List<String> curWords = new ArrayList<>();
+    int curWordLen = 0;
+    
     public List<String> fullJustify(String[] words, int maxWidth) {
-        List<String> re = new ArrayList<>();
         
-        int move = 0;
-        while(move < words.length){
-            // start of a line
-            int lStart = move;
-            int count = words[move].length();
-            move++;
-            
-            while(move < words.length && words[move].length() + 1 + count <= maxWidth){
-                count += words[move].length() + 1;    // space in front of a word
-                move++;
+        for(int i = 0; i < words.length; i++) {
+            String word = words[i];
+            // prevWords + spaces + newWord
+            if(curWordLen + curWords.size() + word.length() <= maxWidth) {
+                curWords.add(word);
+                curWordLen += word.length();
             }
-            
-            // found words in one line. Specify gaps
-            int gap = 1, extra = 0;
-            // beware of division by 0
-            if(move < words.length && move != lStart + 1){
-                // #gap: 1 less than #words in a line
-                int gapC = move - lStart - 1;
-                gap += (maxWidth - count)/gapC;
-                extra = (maxWidth - count)%gapC;
+            else {
+                addToList(words, maxWidth, i);
+                
+                // Reset and stay at current word
+                curWords = new ArrayList<>();
+                curWordLen = 0;
+                i--;
             }
-            // spaces for one gap
-            String sGap = getSpaces(gap);
-            
-            String line = words[lStart];
-            lStart++;
-            // special gaps(add space first)
-            while(extra > 0){
-                line += sGap + " ";
-                line += words[lStart];
-                extra--;
-                lStart++;
-            }
-            // normal gaps
-            while(lStart < move){
-                line += sGap;
-                line += words[lStart];
-                lStart++;
-            }
-            // last line fill up
-            line += getSpaces(maxWidth - line.length());
-            re.add(line);
         }
-        return re;
+        // don't forget the last line
+        addToList(words, maxWidth, words.length);
+        return res;
     }
     
-    public String getSpaces(int x){
-        String s = "";
-        while(x > 0){
-            s += " ";
-            x--;
+    public void addToList(String[] words, int maxWidth, int i) {
+        // set up interval spaces and tail spaces
+        StringBuilder str = new StringBuilder();
+        int spaces = maxWidth - curWordLen;
+        int cnt = curWords.size(), interval = 1, extra = 0, tail = maxWidth - (cnt-1) - curWordLen;
+        if(cnt != 1 && i != words.length) {
+            interval = spaces / (cnt-1);
+            extra = spaces - interval * (cnt-1);
+            tail = 0;
         }
-        return s;
+        // append to str
+        for(int j = 0; j < cnt; j++) {
+            // add extra one space if extra > 0
+            str.append(curWords.get(j))
+                .append(spaceStr(j, cnt, interval, extra--, tail));
+        }
+        res.add(str.toString());
+    }
+    
+    public String spaceStr(int j, int cnt, int interval, int extra, int tail) {
+        if(j == cnt-1)   return _spaces(tail);
+        else    return _spaces(interval + (extra > 0? 1: 0));
+    }
+    
+    public String _spaces(int n) {
+        StringBuilder s = new StringBuilder();
+        for(int i = 0; i < n; i++) {
+            s.append(' ');
+        }
+        return s.toString();
     }
 }
