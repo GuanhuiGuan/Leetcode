@@ -1,67 +1,56 @@
 class Solution {
+    
+    Map<Character, Set<Character>> map = new HashMap<>();
+    Map<Character, Integer> degree = new HashMap<>();
+    
+    //** Topological Sort *
     public String alienOrder(String[] words) {
-        String re = "";
-        if(words.length == 0)   return re;
-        
-        // converge to DAG and topological sort
-        // graphs and indegree(of all letters)
-        Map<Character, Set<Character>> graph = new HashMap<>();
-        Map<Character, Integer> inDegree = new HashMap<>();
-        for(String word: words){
-            for(int i = 0; i < word.length(); i++){
-                inDegree.put(word.charAt(i), 0);
-            }
+        initChars(words);
+        return sort();
+    }
+    
+    public void initChars(String[] words) {
+        for(String word: words) {
+            for(char c: word.toCharArray()) degree.put(c, 0);
         }
         
-        // compare every adjacent two words
-        for(int i = 0; i < words.length-1; i++){
-            String w1 = words[i];
-            String w2 = words[i+1];
-            int len = Math.min(w1.length(), w2.length());
-            // find the 1st different character
-            for(int j = 0; j < len; j++){
-                char c1 = w1.charAt(j), c2 = w2.charAt(j);
-                if(c1 != c2){
-                    Set<Character> set = new HashSet<>();
-                    // if c1 is added to graph
-                    if(graph.containsKey(c1)){
-                        set = graph.get(c1);
-                    }
-                    // if c1 not connected to c2
-                    if(!set.contains(c2)){
+        // For each neighboring pair of words, find first pair of chars not the same
+        for(int i = 1; i < words.length; i++) {
+            String w1 = words[i-1], w2 = words[i];
+            for(int j = 0, k = 0; j < w1.length() && k < w2.length(); j++, k++) {
+                char c1 = w1.charAt(j), c2 = w2.charAt(k);
+                if(c1 != c2) {
+                    // add c2 as child to c1(if not added already)(avoid duplication), and increment c2's degree
+                    Set<Character> set = map.get(c1) == null? new HashSet<>(): map.get(c1);
+                    if(!set.contains(c2)) {
                         set.add(c2);
-                        graph.put(c1, set);
-                        inDegree.put(c2, inDegree.get(c2)+1);
+                        map.put(c1, set);
+                        degree.put(c2, degree.get(c2)+1);
                     }
-                    // those beyond may lead to wrong results
                     break;
                 }
             }
         }
-        
-        // topological sort(Kahn's algorithm)
+    }
+    
+    //** Find those with 0 degree and decrement their children's degrees
+    public String sort() {
         Queue<Character> queue = new LinkedList<>();
-        // 1. find 0-indegree
-        for(char key: inDegree.keySet()){
-            if(inDegree.get(key) == 0){
-                queue.offer(key);
-            }
+        for(Map.Entry<Character, Integer> entry: degree.entrySet()) {
+            if(entry.getValue() == 0)   queue.offer(entry.getKey());
         }
-        // 2. find its neighbors, cut edges and insert if they have 0-indegree
-        while(!queue.isEmpty()){
+        
+        StringBuilder sb = new StringBuilder();
+        while(!queue.isEmpty()) {
             char c = queue.poll();
-            re += Character.toString(c);
-            if(!graph.containsKey(c))   continue;
-            Set<Character> g = graph.get(c);
-            for(char cn: g){
-                inDegree.put(cn, inDegree.get(cn)-1);
-                if(inDegree.get(cn) == 0){
-                    queue.offer(cn);
-                }
+            sb.append(c);
+            Set<Character> children = map.get(c);
+            if(children == null)    continue;
+            for(char child: children) {
+                degree.put(child, degree.get(child)-1);
+                if(degree.get(child) == 0)  queue.offer(child);
             }
         }
-        // 3. check if valid and output
-        if(re.length() != inDegree.size())  return "";
-        return re;
+        return sb.length() != degree.size()? "": sb.toString();
     }
 }
