@@ -8,41 +8,41 @@
  */
 public class Solution {
     public void connect(TreeLinkNode root) {
-        // next lvl head; next lvl leading node; cur lvl leading node
-        TreeLinkNode head = null, tail = null, cur = root;
+        // Level by level traversal, two lvls at a time
+        
+        TreeLinkNode cur = root, nHead = null, nTail = null;
+        
+        // outer loop for going next level
         while(cur != null) {
-            // lvl traversal
+            // inner loop for moving along current level
             while(cur != null) {
-                // traverse horizontally in cur lvl
-                // if tail null(start of lvl), initialize head; else point tail.next; move tail
-                // left child
+                // left node
                 if(cur.left != null) {
-                    if(tail == null) {
-                        head = cur.left;
-                    }
-                    else {
-                        tail.next = cur.left;
-                    }
-                    tail = cur.left;
+                    // if start of lvl, mark start of next lvl with nHead
+                    if(nTail == null)   nHead = cur.left;
+                    // otherwise, connect next node with nTail
+                    else    nTail.next = cur.left;
+                    // move horizontally
+                    nTail = cur.left;
                 }
                 
-                // right child
+                // right node
                 if(cur.right != null) {
-                    if(tail == null) {
-                        head = cur.right;
-                    }
-                    else {
-                        tail.next = cur.right;
-                    }
-                    tail = cur.right;
+                    // if start of lvl, mark start of next lvl with nHead
+                    if(nTail == null)   nHead = cur.right;
+                    // otherwise, connect next node with nTail
+                    else    nTail.next = cur.right;
+                    // move horizontally
+                    nTail = cur.right;
                 }
+                
+                // cur move
                 cur = cur.next;
             }
-            
-            // to next lvl
-            cur = head;
-            head = null;
-            tail = null;
+            // traverse to next level
+            cur = nHead;
+            nHead = null;
+            nTail = null;
         }
     }
 }
