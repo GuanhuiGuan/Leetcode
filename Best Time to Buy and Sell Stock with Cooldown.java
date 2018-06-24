@@ -1,18 +1,13 @@
 class Solution {
     public int maxProfit(int[] prices) {
-        int n = prices.length;
-        
-        // i-2: rest before buy; i-1: buy before sell
-        // buy[i] = max(sell[i-2]-p[i], buy[i-1]);
-        // sell[i] = max(buy[i-1]+p[i], sell[i-1]);
-        
-        int b0 = Integer.MIN_VALUE, b1 = Integer.MIN_VALUE, s0 = 0, s1 = 0;
-        for(int p: prices){
-            b0 = b1;
-            b1 = Math.max(s0-p, b0);
-            s0 = s1;
-            s1 = Math.max(b0+p, s0);
+        // cache dp one day earlier
+        int dp0_pre = 0, dp0 = 0, dp1 = Integer.MIN_VALUE;
+        for(int price: prices) {
+            int _dp0 = dp0;
+            dp0 = Math.max(dp0, dp1 + price);
+            dp1 = Math.max(dp1, dp0_pre - price);
+            dp0_pre = _dp0;
         }
-        return s1;
+        return dp0;
     }
 }
