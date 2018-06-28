@@ -1,27 +1,26 @@
 class Solution {
-    // reservoir sampling
+    Random rand = new Random();
     int[] nums;
-    Random r = new Random();
 
     public Solution(int[] nums) {
         this.nums = nums;
     }
     
+    //** Reservoir Sampling, the length is the number of target met on the sweep */
     public int pick(int target) {
-        int count = 0, re = -1;
+        int res = -1, reservoirLen = 0;
         for(int i = 0; i < nums.length; i++) {
             if(target == nums[i]) {
-                if(re < 0)  re = i;
-                else {
-                    // count exclude the current one
-                    int next = r.nextInt(count+1);
-                    if(next == count)   re = i;
-                }
-                // increment after update
-                count++;
+                // If first one, assign value
+                if(res < 0) res = i;
+                // Otherwise, randomly draw one out of the reservoir(those targets met)
+                // If it's the current one, swap
+                else if(rand.nextInt(reservoirLen+1) == reservoirLen)   res = i;
+                // Remember to increment the reservoir length
+                reservoirLen++;
             }
         }
-        return re;
+        return res;
     }
 }
 
