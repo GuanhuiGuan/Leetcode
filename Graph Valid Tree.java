@@ -1,21 +1,32 @@
 class Solution {
     public boolean validTree(int n, int[][] edges) {
-        int[] parent = new int[n];
-        for(int i = 0; i < n; i++)  parent[i] = i;
+        // special union find used for check if it's DAG
+        // Edge number == n-1 means it's one tree
         
-        for(int[] e: edges) {
-            int p0 = find(parent, e[0]);
-            int p1 = find(parent, e[1]);
-            if(p0 == p1)    return false;
-            parent[p1] = p0;
+        // Init with -1
+        int[] roots = new int[n];
+        Arrays.fill(roots, -1);
+        
+        // Find if cycles exist
+        for(int[] edge: edges) {
+            int r0 = find(roots, edge[0]);
+            int r1 = find(roots, edge[1]);
+            
+            // If same root, cycle(s) exist
+            if(r0 == r1)    return false;
+            
+            // Union by the roots
+            roots[r1] = r0;
         }
+        
+        // Check if only one tree
         return edges.length == n-1;
     }
     
-    public int find(int[] parent, int i) {
-        int p = parent[i];
-        if(p == i)  return p;
-        parent[i] = find(parent, p);
-        return parent[i];
+    // Set root of c and its predecessors to the root of p
+    public int find(int[] roots, int i) {
+        // When find the root
+        if(roots[i] == -1)  return i;
+        return find(roots, roots[i]);
     }
 }
