@@ -1,43 +1,34 @@
 class Solution {
     public int numDecodings(String s) {
-        // init
+        // Cannot start with '0'
         if(s == null || s.length() == 0 || s.charAt(0) == '0')    return 0;
         int n = s.length();
         long[] dp = new long[n+1];
         dp[0] = 1;
         dp[1] = s.charAt(0) == '*'? 9: 1;
         
-        // DP
-        for(int i = 2; i <= n; i++) {
-            char fst = s.charAt(i-2), snd = s.charAt(i-1);
+        // Sweep every pair
+        for(int i = 1; i < n; i++) {
+            char c1 = s.charAt(i-1), c2 = s.charAt(i);
             
-            // single char
-            if(snd == '*')  dp[i] += 9*dp[i-1];
-            else if(snd > '0')  dp[i] += dp[i-1];
+            // Single(c2 == 0 is an invalid single)
+            dp[i+1] += (c2 == '*'? 9: (c2 == '0'? 0: 1)) * dp[i];
             
-            // pair chars(fst can only be *, 1, 2)
-            if(fst == '*') {
-                // 1/2+*, 1/2+(0~6), 1+(7~9)
-                if(snd == '*')  dp[i] += (9+6) * dp[i-2];
-                else if(snd < '7') dp[i] += 2 * dp[i-2];
-                else    dp[i] += dp[i-2];
+            // Pair
+            if(c1 == '*') {
+                if(c2 == '*')   dp[i+1] += (9+6) * dp[i-1];
+                else    dp[i+1] += (c2 > '6'? 1: 2) * dp[i-1];
             }
-            else if(fst == '1' || fst == '2') {
-                // 1*, 2*
-                if(snd == '*') {
-                    if(fst == '1')  dp[i] += 9 * dp[i-2];
-                    else    dp[i] += 6 * dp[i-2];
+            else if(c1 == '1' || c1 == '2') {
+                if(c2 == '*')   dp[i+1] += (c1 == '1'? 9: 6) * dp[i-1];
+                else {
+                    int v = (c1 - '0')*10 + c2 - '0';
+                    if(v > 0 && v < 27) dp[i+1] += dp[i-1];
                 }
-                // 1/2+()
-                else if(valid(fst, snd))    dp[i] += dp[i-2];
             }
-            dp[i] %= 1000000007;
+            dp[i+1] %= 1000000007;
         }
-        return (int)dp[n];
-    }
-    
-    public boolean valid(char fst, char snd) {
-        int num = (fst - '0') * 10 + snd - '0';
-        return num > 0 && num <= 26;
+        
+        return (int)(dp[n]);
     }
 }
