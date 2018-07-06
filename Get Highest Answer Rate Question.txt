@@ -1,0 +1,11 @@
+# Write your MySQL query statement below
+# Sum by group to form a new table, and use that table to sort and take top
+
+SELECT question_id AS survey_log
+FROM (
+    SELECT question_id, SUM(CASE WHEN action='show' THEN 1 ELSE 0 END) AS show_count, SUM(CASE WHEN action='answer' THEN 1 ELSE 0 END) AS ans_count
+    FROM survey_log
+    GROUP BY question_id
+)
+AS helper
+ORDER BY (ans_count/show_count) DESC LIMIT 1;
