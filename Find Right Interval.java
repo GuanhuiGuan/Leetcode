@@ -17,6 +17,7 @@ class Solution {
         
         int[] res = new int[intervals.length];
         for(int k = 0; k < intervals.length; k++) {
+            // ceilingKey: >=; floorKey: <=; higherKey: >; lowerKey: <
             Integer right = map.ceilingKey(intervals[k].end);
             res[k] = right==null? -1: map.get(right);
         }
