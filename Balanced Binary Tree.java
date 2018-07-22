@@ -8,16 +8,21 @@
  * }
  */
 class Solution {
+    
     public boolean isBalanced(TreeNode root) {
-        if(root == null)    return true;
-        return Math.abs(height(root.left) - height(root.right)) < 2 
-            && isBalanced(root.left) && isBalanced(root.right);
+        return height(root) != -1;
     }
     
-    public int height(TreeNode node) {
+    private int height(TreeNode node) {
+        // -1 means unbalanced
         if(node == null)    return 0;
-        int lh = height(node.left);
-        int rh = height(node.right);
-        return Math.max(lh, rh) + 1;
+        int lh = height(node.left), rh = height(node.right);
+        // If subtree unbalanced
+        if(lh == -1)    return -1;
+        if(rh == -1)    return -1;
+        // If current unbalanced
+        if(Math.abs(lh - rh) > 1)   return -1;
+        // Else, return correct height
+        else    return Math.max(lh, rh) + 1;
     }
 }
