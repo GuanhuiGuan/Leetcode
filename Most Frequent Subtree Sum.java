@@ -8,29 +8,35 @@
  * }
  */
 class Solution {
+    
     Map<Integer, Integer> map = new HashMap<>();
-    int maxCount = 0;
+    int max = 0;
+    List<Integer> list = new ArrayList<>();
     
     public int[] findFrequentTreeSum(TreeNode root) {
-        subsum(root);
-        if(map.size() == 0) return new int[0];
-        List<Integer> list = new ArrayList<>();
+        sum(root);
         
-        for(int key: map.keySet()) {
-            if(map.get(key) == maxCount)    list.add(key);
-        }
-        int[] re = new int[list.size()];
-        for(int i = 0; i < list.size(); i++)    re[i] = list.get(i);
-        return re;
+        int[] res = new int[list.size()];
+        for(int i = 0; i < list.size(); i++)    res[i] = list.get(i);
+        return res;
     }
     
-    public int subsum(TreeNode node) {
+    private int sum(TreeNode node) {
         if(node == null)    return 0;
-        int sum = node.val;
-        sum += subsum(node.left) + subsum(node.right);
+        int ls = sum(node.left), rs = sum(node.right);
+        int sum = ls + rs + node.val;
         map.put(sum, map.getOrDefault(sum, 0)+1);
-        // keep track of max count
-        maxCount = Math.max(maxCount, map.get(sum));
+        
+        int v = map.get(sum);
+        if(v > max) {
+            max = v;
+            list = new ArrayList<>();
+            list.add(sum);
+        }
+        else if(v == max) {
+            list.add(sum);
+        }
+        
         return sum;
     }
 }
